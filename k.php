@@ -40,18 +40,6 @@ $jar    = new CookieJar();
 //)->wait();
 //var_dump($data);
 
-$promises = [
-    'a' => $client->requestAsync('post', 'http://vip.luobokuai.com/Center/Login', [
-        'json'    => [
-            'action'    => 'login',
-            'telephone' => '',
-            'password'  => '321321',
-        ],
-        'cookies' => $jar,
-    ])
-];
-$a = \GuzzleHttp\Promise\unwrap($promises);
-var_dump($a['a']->getBody()->getContents());
 
 
 
