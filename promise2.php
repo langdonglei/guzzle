@@ -14,12 +14,14 @@ $request1 = new Request('get', 'api/a');
 $request2 = new Request('get', 'api/b');
 $request3 = new Request('get', 'api/c');
 
+$promises = [
+    'a' => $client->sendAsync($request1),
+    'b' => $client->sendAsync($request2),
+    'c' => $client->sendAsync($request3),
+];
+
 try {
-    $responses = Utils::unwrap([
-        'a' => $client->sendAsync($request1),
-        'b' => $client->sendAsync($request2),
-        'c' => $client->sendAsync($request3),
-    ]);
+    $responses = Utils::unwrap($promises);
 } catch (Throwable $e) {
     var_dump($e->getMessage());
     exit();

@@ -1,4 +1,5 @@
 <?php
+$t1 = time();
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -7,34 +8,34 @@ use GuzzleHttp\Psr7\Request;
 include './vendor/autoload.php';
 
 $client = new Client([
-//    'base_uri' => 'http://dd.com'
+//    'base_uri' => 'http://dd.com:80'
 ]);
 
 
 $requests = function ($total) {
     for ($i = 0; $i < $total; $i++) {
-        yield new Request('get', 'http://www.baidu.com');
+        yield new Request('get', 'http://dd.com/api/a');
     }
 };
 
-
-$responses = [];
-$pool = new Pool($client, $requests(1), [
-    'concurrency' => 2,
-    'fulfilled'   => function ($response, $index) {
-        $responses[$index] = $response;
+$arr  = [];
+$pool = new Pool($client, $requests(30), [
+    'concurrency' => 5,
+    'fulfilled'   => function (\GuzzleHttp\Psr7\Response $response, $index) use (&$arr) {
+        $arr[] = json_decode($response->getBody()->getContents(), true);
     },
     'rejected'    => function ($reason, $index) {
-        $responses[$index] = [];
+        var_dump($reason->getMessage());
     },
 ]);
 
+
 $promise = $pool->promise();
 
-// Force the pool of requests to complete.
+
 $promise->wait();
 
-var_dump($responses);
+var_dump(time() - $t1);
 
 
 
