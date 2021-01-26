@@ -1,21 +1,30 @@
 <?php
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise\Utils;
+use GuzzleHttp\Psr7\Request;
+
 include './vendor/autoload.php';
 
-$client = new \GuzzleHttp\Client([
-    'base_uri' => 'http://vip.luobokuai.com',
+$client = new Client([
+    'base_uri' => 'http://dd.com:80'
 ]);
 
-$promises = [
-    'a'=>$client->getAsync('/a'),
-    'b'=>$client->getAsync('/b'),
-];
+$request1 = new Request('get', 'api/a');
+$request2 = new Request('get', 'api/b');
+$request3 = new Request('get', 'api/c');
 
 try {
-    $a = \GuzzleHttp\Promise\Utils::unwrap($promises);
+    $responses = Utils::unwrap([
+        'a' => $client->sendAsync($request1),
+        'b' => $client->sendAsync($request2),
+        'c' => $client->sendAsync($request3),
+    ]);
 } catch (Throwable $e) {
-    echo $e->getMessage();
-    exit;
+    var_dump($e->getMessage());
+    exit();
 }
 
-var_dump($a);
+foreach ($responses as $response) {
+    echo ($response->getBody());
+}
